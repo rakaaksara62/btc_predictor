@@ -1,0 +1,98 @@
+import streamlit as st
+import requests
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.interpolate import interp1d
+from sklearn.linear_model import LinearRegression
+import time
+
+st.title("📊 Analisis Data Realtime Bitcoin")
+st.write("Metode: Interpolasi dan Regresi Linear")
+
+# ========================
+# AMBIL DATA DARI API
+# ========================
+url = "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=1"
+
+try:
+    response = requests.get(url, timeout=5)
+    response.raise_for_status()
+    data = response.json()
+
+    if 'prices' not in data:
+        st.error("API tidak mengembalikan data harga (kemungkinan rate limit).")
+        st.stop()
+
+    prices = data['prices']
+
+except requests.exceptions.RequestException as e:
+    st.error(f"Gagal mengambil data dari API: {e}")
+    st.stop()
+
+# ========================
+# DATAFRAME
+# ========================
+df = pd.DataFrame(prices, columns=['timestamp', 'price'])
+df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
+
+# ambil data terakhir saja biar ringan
+df = df.tail(50)
+
+st.subheader("Data Harga Bitcoin")
+st.dataframe(df)
+
+# ========================
+# PREPARASI DATA
+# ========================
+x = np.arange(len(df))
+y = df['price'].values
+
+# ========================
+# INTERPOLASI
+# ========================
+f_interp = interp1d(x, y, kind='linear')
+x_interp = np.linspace(x.min(), x.max(), len(x)*5)
+y_interp = f_interp(x_interp)
+
+# ========================
+# REGRESI LINEAR
+# ========================
+model = LinearRegression()
+model.fit(x.reshape(-1,1), y)
+y_pred = model.predict(x.reshape(-1,1))
+
+# ========================
+# VISUALISASI
+# ========================
+st.subheader("Visualisasi Analisis")
+
+fig, ax = plt.subplots()
+
+ax.plot(x, y, 'o-', label="Data Asli")
+ax.plot(x_interp, y_interp, '--', label="Interpolasi")
+ax.plot(x, y_pred, label="Regresi Linear")
+
+ax.set_xlabel("Waktu (index)")
+ax.set_ylabel("Harga BTC (USD)")
+ax.legend()
+
+st.pyplot(fig)
+
+# ========================
+# PREDIKSI
+# ========================
+st.subheader("Prediksi Harga")
+
+future_step = st.slider("Langkah ke depan", 1, 10, 3)
+future_x = np.array([[len(x) + future_step]])
+future_price = model.predict(future_x)
+
+st.write(f"Prediksi harga {future_step} langkah ke depan: ${future_price[0]:,.2f}")
+
+# ========================
+# AUTO REFRESH
+# ========================
+st.caption("Data diperbarui setiap 20 detik")
+time.sleep(20)
+st.rerun()
