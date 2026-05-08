@@ -18,8 +18,8 @@ st.set_page_config(
 # ========================
 # HEADER PROJECT
 # ========================
-st.markdown("## Project Responsi Komputasi Numerik by")
-st.markdown("### KN-45")
+st.markdown("## Project Responsi Komputasi Numerik")
+st.markdown("### by KN-45")
 st.markdown("Raka Khairan Taqi Aksara | Vino Ageliansyah | Muhamad Aprizal")
 st.markdown("3332250139 | 3332250140 | 3332250151")
 st.markdown(
