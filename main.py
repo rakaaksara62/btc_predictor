@@ -22,6 +22,9 @@ st.markdown("## Project Responsi Komputasi Numerik by")
 st.markdown("### KN-45")
 st.markdown("Raka Khairan Taqi Aksara | Vino Ageliansyah | Muhamad Aprizal")
 st.markdown("3332250139 | 3332250140 | 3332250151")
+st.markdown(
+    "[🔗 Source Code Project](https://github.com/rakaaksara62/btc_predictor)"
+)
 
 st.title("📊 Analisis Data Realtime Bitcoin")
 st.write("Metode: Interpolasi dan Regresi Linear")
@@ -331,3 +334,6 @@ else:
         "Klik tombol di atas untuk mengambil "
         "data Bitcoin terbaru."
     )
+st.markdown(
+    "[🔗 Source Code Project](https://github.com/rakaaksara62/btc_predictor)"
+)
